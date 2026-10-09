@@ -21,6 +21,9 @@ public class Cliente {
     @Column(length = 20)
     private String telefone;
 
+    @Column(name = "regiao", length = 100)
+    private String regiao;
+
     @Column(name = "data_cadastro", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dataCadastro;
 
@@ -34,6 +37,12 @@ public class Cliente {
     public void setNome(String nome) { this.nome = nome; }
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
+    public String getRegiao() {
+        return regiao;
+    }
+    public void setRegiao(String regiao) {
+        this.regiao = regiao;
+    }
     public LocalDateTime getDataCadastro() { return dataCadastro; }
     public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
     public List<Pedido> getPedidos() { return pedidos; }

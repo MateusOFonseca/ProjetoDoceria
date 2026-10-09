@@ -27,19 +27,35 @@ public class ClienteController {
         return service.listarCliente();
     }
 
-    @DeleteMapping
-    public ResponseEntity<HttpStatus> deletarCliente(@RequestBody Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deletarCliente(@PathVariable Long id){
         var deletado = service.deletarCliente(id);
         return ResponseEntity.ok().body(HttpStatus.OK);
     }
-    @GetMapping("/buscarPorNome")
-    public ResponseEntity<List<Cliente>> buscarPeloNome(@RequestBody String nome){
-        var cliente = service.buscarClientesPorNome(nome);
-        return ResponseEntity.ok().body(cliente).getBody();
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Cliente>> buscarClientesPorNome(@RequestParam String nome) {
+        List<Cliente> clientes = service.buscarPorNome(nome);
+        return ResponseEntity.ok(clientes);
     }
 
+    @GetMapping("/buscar-telefone")
+    public ResponseEntity<List<Cliente>> buscarClientesPorTelefone(@RequestParam String telefone) {
+        List<Cliente> clientes = service.buscarClientePeloTelefone(telefone);
+        return ResponseEntity.ok(clientes);
+    }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteAtualizado) {
+        return service.atualizarParcial(id, clienteAtualizado)
+                .map(clienteSalvo -> ResponseEntity.ok(clienteSalvo))
+                .orElse(ResponseEntity.notFound().build());
+    }
 
+    @GetMapping("/buscar-regiao")
+    public ResponseEntity<List<Cliente>> buscarClientesPorRegiao(@RequestParam String regiao) {
+        List<Cliente> clientes = service.buscarClientePelaRegiao(regiao);
+        return ResponseEntity.ok(clientes);
+    }
 
 
 }

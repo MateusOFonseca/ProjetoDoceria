@@ -5,6 +5,9 @@ import com.Api.OqaJanaFezHoje.repository.DoceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class DoceService {
@@ -15,15 +18,26 @@ public class DoceService {
     public Doce salvarDoce(Doce doce) {
         return doceRepository.save(doce);
     }
-    public ResponseEntity<Doce> atualizarDoce(Long id, Doce doceAtualizado) {
+
+    @Transactional
+    public Optional<Doce> atualizarDoce(Long id, Doce doceAtualizado) {
         return doceRepository.findById(id)
                 .map(doce -> {
-                    doce.setNome(doceAtualizado.getNome());
-                    doce.setPreco(doceAtualizado.getPreco());
-                    Doce doceSalvo = doceRepository.save(doce);
-                    return ResponseEntity.ok(doceSalvo);
-                })
-                .orElse(ResponseEntity.notFound().build());
+                    if (doceAtualizado.getNome() != null && !doceAtualizado.getNome().trim().isEmpty()) {
+                        doce.setNome(doceAtualizado.getNome());
+                    }
+                    if (doceAtualizado.getPreco() != null) {
+                        doce.setPreco(doceAtualizado.getPreco());
+                    }
+                    if (doceAtualizado.getDescricao() != null && !doceAtualizado.getDescricao().trim().isEmpty()) {
+                        doce.setDescricao(doceAtualizado.getDescricao());
+                    }
+                    if (doceAtualizado.getQuantidadeEstoque() != null) {
+                        doce.setQuantidadeEstoque(doceAtualizado.getQuantidadeEstoque());
+                    }
+
+                    return doceRepository.save(doce);
+                });
     }
 
     public ResponseEntity<Void> deletarDoce(Long id) {

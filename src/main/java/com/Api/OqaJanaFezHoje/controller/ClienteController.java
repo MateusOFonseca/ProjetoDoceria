@@ -44,7 +44,7 @@ public class ClienteController {
         return ResponseEntity.ok(clientes);
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteAtualizado) {
         return service.atualizarParcial(id, clienteAtualizado)
                 .map(clienteSalvo -> ResponseEntity.ok(clienteSalvo))

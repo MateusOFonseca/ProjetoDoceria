@@ -12,6 +12,7 @@ import com.Api.OqaJanaFezHoje.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class PedidoService {
     }
 
     @Transactional
-    public Pedido modificarPedido(Integer idPedido, PedidoRequest dto) {
+    public Pedido modificarPedido(Long idPedido, PedidoRequest dto) {
         // 1. Localiza o pedido existente
         Pedido pedido = pedidoRepository.findById(Long.valueOf(idPedido))
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado com o ID: " + idPedido));
@@ -119,11 +120,22 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
-    public void deletarPedido(Integer idPedido) {
+    public void deletarPedido(Long idPedido) {
         Pedido pedido = pedidoRepository.findById(Long.valueOf(idPedido))
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado com o ID: " + idPedido));
         pedidoRepository.delete(pedido);
     }
 
+    public List<Pedido> listarPedidos() {
+        return pedidoRepository.findAll();
+    }
+
+    public Optional<Pedido> buscarPedidoPorId(Long idPedido) {
+        return pedidoRepository.findById(idPedido);
+    }
+
+    public List<Pedido> buscarPedidosPorCliente(Long idCliente) {
+        return pedidoRepository.findByClienteIdCliente(idCliente);
+    }
 
 }

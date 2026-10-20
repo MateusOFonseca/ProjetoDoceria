@@ -1,5 +1,6 @@
 package com.Api.OqaJanaFezHoje.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "id_cliente")
+    @JsonIgnoreProperties("cliente")
     private Cliente cliente;
 
     @Column(name = "data_pedido", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -28,6 +30,7 @@ public class Pedido {
     private BigDecimal valorTotal;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("pedido")
     private List<ItemPedido> itens;
 
     // Getters e Setters

@@ -1,5 +1,6 @@
 package com.Api.OqaJanaFezHoje.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ public class Cliente {
     private LocalDateTime dataCadastro;
 
     @OneToMany(mappedBy = "cliente")
+    @JsonIgnoreProperties("cliente")
     private List<Pedido> pedidos;
 
     // Getters e Setters

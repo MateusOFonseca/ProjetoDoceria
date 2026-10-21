@@ -1,9 +1,11 @@
 package com.Api.OqaJanaFezHoje.controller;
 
 import com.Api.OqaJanaFezHoje.dtos.PedidoRequest;
-import com.Api.OqaJanaFezHoje.entity.Pedido;
+import com.Api.OqaJanaFezHoje.dtos.PedidoResponse;
 import com.Api.OqaJanaFezHoje.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,9 @@ public class PedidoController {
     private PedidoService service;
 
     @PostMapping
-    public ResponseEntity<PedidoRequest> salvarPedido(@RequestBody PedidoRequest pedido) {
-        service.criarPedido(pedido);
-        return ResponseEntity.ok().body(pedido);
+    public ResponseEntity<PedidoResponse> salvarPedido(@RequestBody PedidoRequest pedido) {
+        PedidoResponse pedidoSalvo = service.criarPedido(pedido);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoSalvo);
     }
 
     @DeleteMapping("/{id}")
@@ -31,8 +33,8 @@ public class PedidoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Pedido> atualizarPedido(@PathVariable Long id, @RequestBody PedidoRequest pedidoAtualizado) {
-        Pedido pedidoSalvo = service.modificarPedido(id, pedidoAtualizado);
+    public ResponseEntity<PedidoResponse> atualizarPedido(@PathVariable Long id, @RequestBody PedidoRequest pedidoAtualizado) {
+        PedidoResponse pedidoSalvo = service.modificarPedido(id, pedidoAtualizado);
         if (pedidoSalvo != null) {
             return ResponseEntity.ok(pedidoSalvo);
         } else {
@@ -41,8 +43,8 @@ public class PedidoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Pedido>> buscarPedidoPorId(@PathVariable Long id) {
-        Optional<Pedido> pedido = service.buscarPedidoPorId(id);
+    public ResponseEntity<Optional<PedidoResponse>> buscarPedidoPorId(@PathVariable Long id) {
+        Optional<PedidoResponse> pedido = service.buscarPedidoPorId(id);
         if (pedido != null) {
             return ResponseEntity.ok(pedido);
         } else {
@@ -51,14 +53,14 @@ public class PedidoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Pedido>> listarPedidos() {
-        List<Pedido> pedidos = service.listarPedidos();
+    public ResponseEntity<List<PedidoResponse>> listarPedidos() {
+        List<PedidoResponse> pedidos = service.listarPedidos();
         return ResponseEntity.ok(pedidos);
     }
 
     @GetMapping("/buscar-cliente")
-    public ResponseEntity<List<Pedido>> buscarPedidosPorCliente(@RequestParam Long idCliente) {
-        List<Pedido> pedidos = service.buscarPedidosPorCliente(idCliente);
+    public ResponseEntity<List<PedidoResponse>> buscarPedidosPorCliente(@RequestParam Long idCliente) {
+        List<PedidoResponse> pedidos = service.buscarPedidosPorCliente(idCliente);
         return ResponseEntity.ok(pedidos);
     }
 

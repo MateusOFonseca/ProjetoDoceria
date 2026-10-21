@@ -2,10 +2,12 @@ package com.Api.OqaJanaFezHoje.service;
 
 import com.Api.OqaJanaFezHoje.dtos.ItemPedidoRequest;
 import com.Api.OqaJanaFezHoje.dtos.PedidoRequest;
+import com.Api.OqaJanaFezHoje.dtos.PedidoResponse;
 import com.Api.OqaJanaFezHoje.entity.Cliente;
 import com.Api.OqaJanaFezHoje.entity.Doce;
 import com.Api.OqaJanaFezHoje.entity.ItemPedido;
 import com.Api.OqaJanaFezHoje.entity.Pedido;
+import com.Api.OqaJanaFezHoje.mapper.PedidoMapper;
 import com.Api.OqaJanaFezHoje.repository.ClienteRepository;
 import com.Api.OqaJanaFezHoje.repository.DoceRepository;
 import com.Api.OqaJanaFezHoje.repository.PedidoRepository;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoService {
@@ -31,8 +34,11 @@ public class PedidoService {
     @Autowired
     private DoceRepository doceRepository;
 
+    @Autowired
+    private PedidoMapper pedidoMapper;
+
     @Transactional
-    public Pedido criarPedido(PedidoRequest dto) {
+    public PedidoResponse criarPedido(PedidoRequest dto) {
         Cliente cliente = clienteRepository.findById(Long.valueOf(dto.idCliente()))
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado!"));
 
@@ -62,11 +68,15 @@ public class PedidoService {
         pedido.setItens(listaItensDoPedido);
         pedido.setValorTotal(valorTotalPedido);
 
-        return pedidoRepository.save(pedido);
+        Pedido pedidoSalvo = pedidoRepository.save(pedido);
+        for (ItemPedido item : listaItensDoPedido) {
+            item.setPedido(pedidoSalvo);
+        }
+        return pedidoMapper.toResponse(pedidoSalvo);
     }
 
     @Transactional
-    public Pedido modificarPedido(Long idPedido, PedidoRequest dto) {
+    public PedidoResponse modificarPedido(Long idPedido, PedidoRequest dto) {
         // 1. Localiza o pedido existente
         Pedido pedido = pedidoRepository.findById(Long.valueOf(idPedido))
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado com o ID: " + idPedido));
@@ -117,7 +127,9 @@ public class PedidoService {
 
         pedido.setValorTotal(novoValorTotal);
 
-        return pedidoRepository.save(pedido);
+        Pedido pedidoAtualizado = pedidoRepository.save(pedido);
+
+        return pedidoMapper.toResponse(pedidoAtualizado);
     }
 
     public void deletarPedido(Long idPedido) {
@@ -126,16 +138,21 @@ public class PedidoService {
         pedidoRepository.delete(pedido);
     }
 
-    public List<Pedido> listarPedidos() {
-        return pedidoRepository.findAll();
+    public List<PedidoResponse> listarPedidos() { // 👈 Mudou para retornar uma lista de DTOs
+        return pedidoRepository.findAll().stream()
+                .map(pedidoMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Pedido> buscarPedidoPorId(Long idPedido) {
-        return pedidoRepository.findById(idPedido);
+    public Optional<PedidoResponse> buscarPedidoPorId(Long idPedido) { // 👈 Mudou para Optional de DTO
+        return pedidoRepository.findById(idPedido)
+                .map(pedidoMapper::toResponse);
     }
 
-    public List<Pedido> buscarPedidosPorCliente(Long idCliente) {
-        return pedidoRepository.findByClienteIdCliente(idCliente);
+    public List<PedidoResponse> buscarPedidosPorCliente(Long idCliente) { // 👈 Mudou para retornar lista de DTOs
+        return pedidoRepository.findByClienteIdCliente(idCliente).stream()
+                .map(pedidoMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
 }

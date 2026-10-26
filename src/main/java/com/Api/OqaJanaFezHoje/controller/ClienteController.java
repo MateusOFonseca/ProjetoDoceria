@@ -1,61 +1,74 @@
 package com.Api.OqaJanaFezHoje.controller;
 
+import com.Api.OqaJanaFezHoje.dtos.ClienteResumoResponse;
 import com.Api.OqaJanaFezHoje.entity.Cliente;
 import com.Api.OqaJanaFezHoje.service.ClienteService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/cliente")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService service;
+    private final ClienteService service;
+
+    public ClienteController(ClienteService service) {
+        this.service = service;
+    }
 
     @PostMapping
-    public ResponseEntity<Cliente> salvarCliente(@RequestBody Cliente cliente){
-       var clienteCriado = service.salvarCliente(cliente);
-        return ResponseEntity.ok(clienteCriado);
-    };
-    @GetMapping
-    public ResponseEntity<List<Cliente>> listarClientes (Cliente cliente){
-        return service.listarCliente();
+    public ResponseEntity<Cliente> salvarCliente(
+            @RequestBody Cliente cliente
+    ) {
+        return ResponseEntity.ok(service.salvarCliente(cliente));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deletarCliente(@PathVariable Long id){
-        var deletado = service.deletarCliente(id);
-        return ResponseEntity.ok().body(HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<ClienteResumoResponse>> listarClientes() {
+        return ResponseEntity.ok(service.listarCliente());
     }
+
     @GetMapping("/buscar")
-    public ResponseEntity<List<Cliente>> buscarClientesPorNome(@RequestParam String nome) {
-        List<Cliente> clientes = service.buscarPorNome(nome);
-        return ResponseEntity.ok(clientes);
+    public ResponseEntity<List<ClienteResumoResponse>> buscarClientesPorNome(
+            @RequestParam String nome
+    ) {
+        return ResponseEntity.ok(service.buscarPorNome(nome));
     }
 
     @GetMapping("/buscar-telefone")
-    public ResponseEntity<List<Cliente>> buscarClientesPorTelefone(@RequestParam String telefone) {
-        List<Cliente> clientes = service.buscarClientePeloTelefone(telefone);
-        return ResponseEntity.ok(clientes);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteAtualizado) {
-        return service.atualizarParcial(id, clienteAtualizado)
-                .map(clienteSalvo -> ResponseEntity.ok(clienteSalvo))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<List<ClienteResumoResponse>> buscarClientesPorTelefone(
+            @RequestParam String telefone
+    ) {
+        return ResponseEntity.ok(
+                service.buscarClientePeloTelefone(telefone)
+        );
     }
 
     @GetMapping("/buscar-regiao")
-    public ResponseEntity<List<Cliente>> buscarClientesPorRegiao(@RequestParam String regiao) {
-        List<Cliente> clientes = service.buscarClientePelaRegiao(regiao);
-        return ResponseEntity.ok(clientes);
+    public ResponseEntity<List<ClienteResumoResponse>> buscarClientesPorRegiao(
+            @RequestParam String regiao
+    ) {
+        return ResponseEntity.ok(
+                service.buscarClientePelaRegiao(regiao)
+        );
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Cliente> atualizarCliente(
+            @PathVariable Long id,
+            @RequestBody Cliente cliente
+    ) {
+        service.atualizarParcial(id, cliente);
+        return ResponseEntity.ok().build();
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarCliente(
+            @PathVariable Long id
+    ) {
+        service.deletarCliente(id);
+        return ResponseEntity.ok().build();
+    }
 }

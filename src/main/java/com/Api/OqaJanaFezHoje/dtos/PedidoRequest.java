@@ -1,7 +1,7 @@
 package com.Api.OqaJanaFezHoje.dtos;
 
 public record PedidoRequest(
-        Integer idCliente,
+        Long idCliente,
         Iterable<ItemPedidoRequest> itens
 )
 {

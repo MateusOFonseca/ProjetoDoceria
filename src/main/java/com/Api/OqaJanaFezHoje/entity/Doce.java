@@ -10,7 +10,7 @@ public class Doce {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_doce")
-    private Integer idDoce;
+    private Long idDoce;
 
     @Column(nullable = false, length = 100)
     private String nome;
@@ -25,8 +25,8 @@ public class Doce {
     private Integer quantidadeEstoque = 0;
 
     // Getters e Setters
-    public Integer getIdDoce() { return idDoce; }
-    public void setIdDoce(Integer idDoce) { this.idDoce = idDoce; }
+    public Long getIdDoce() { return idDoce; }
+    public void setIdDoce(Long idDoce) { this.idDoce = idDoce; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public String getDescricao() { return descricao; }

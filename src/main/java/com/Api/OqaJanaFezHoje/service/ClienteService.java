@@ -1,80 +1,99 @@
 package com.Api.OqaJanaFezHoje.service;
 
+import com.Api.OqaJanaFezHoje.dtos.ClienteResumoResponse;
 import com.Api.OqaJanaFezHoje.entity.Cliente;
+import com.Api.OqaJanaFezHoje.mapper.ClienteMapper;
 import com.Api.OqaJanaFezHoje.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
+    private final ClienteMapper clienteMapper;
+
+    public ClienteService(
+            ClienteRepository clienteRepository,
+            ClienteMapper clienteMapper
+    ) {
+        this.clienteRepository = clienteRepository;
+        this.clienteMapper = clienteMapper;
+    }
 
     public Cliente salvarCliente(Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
-    @Transactional
-    public Optional<Cliente> atualizarParcial(Long id, Cliente dadosNovos) {
-        return clienteRepository.findById(id).map(clienteOriginal -> {
+    @Transactional(readOnly = true)
+    public List<ClienteResumoResponse> listarCliente() {
+        return clienteRepository.findAll()
+                .stream()
+                .map(clienteMapper::toResumoResponse)
+                .toList();
+    }
 
-            if (dadosNovos.getNome() != null && !dadosNovos.getNome().trim().isEmpty()) {
-                clienteOriginal.setNome(dadosNovos.getNome());
-            }
+    @Transactional(readOnly = true)
+    public List<ClienteResumoResponse> buscarPorNome(String nome) {
+        if (nome == null || nome.isBlank()) {
+            return List.of();
+        }
 
-            if (dadosNovos.getTelefone() != null && !dadosNovos.getTelefone().trim().isEmpty()) {
-                clienteOriginal.setTelefone(dadosNovos.getTelefone());
-            }
+        return clienteRepository
+                .findByNomeContainingIgnoreCase(nome)
+                .stream()
+                .map(clienteMapper::toResumoResponse)
+                .toList();
+    }
 
-            if (dadosNovos.getRegiao() != null && !dadosNovos.getRegiao().trim().isEmpty()) {
-                clienteOriginal.setRegiao(dadosNovos.getRegiao());
+    @Transactional(readOnly = true)
+    public List<ClienteResumoResponse> buscarClientePeloTelefone(
+            String telefone
+    ) {
+        if (telefone == null || telefone.isBlank()) {
+            return List.of();
+        }
+
+        return clienteRepository
+                .findByTelefoneContaining(telefone)
+                .stream()
+                .map(clienteMapper::toResumoResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClienteResumoResponse> buscarClientePelaRegiao(
+            String regiao
+    ) {
+        if (regiao == null || regiao.isBlank()) {
+            return List.of();
+        }
+
+        return clienteRepository
+                .findByRegiaoContainingIgnoreCase(regiao)
+                .stream()
+                .map(clienteMapper::toResumoResponse)
+                .toList();
+    }
+
+    public void atualizarParcial(Long id, Cliente cliente) {
+        clienteRepository.findById(id).ifPresent(c -> {
+            if (cliente.getNome() != null) {
+                c.setNome(cliente.getNome());
             }
-            return clienteRepository.save(clienteOriginal);
+            if (cliente.getTelefone() != null) {
+                c.setTelefone(cliente.getTelefone());
+            }
+            if (cliente.getRegiao() != null) {
+                c.setRegiao(cliente.getRegiao());
+            }
+            clienteRepository.save(c);
         });
     }
 
-    public ResponseEntity<Void> deletarCliente(Long id) {
-        return clienteRepository.findById(id)
-                .map(cliente -> {
-                    clienteRepository.delete(cliente);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public void deletarCliente(Long id) {
+        clienteRepository.deleteById(id);
     }
-
-    public ResponseEntity<List<Cliente>> listarCliente(){
-        return ResponseEntity.ok(clienteRepository.findAll());
-    }
-
-    public List<Cliente> buscarPorNome(String nome) {
-
-        if (nome == null || nome.trim().isEmpty()) {
-            return List.of();
-        }
-
-        return clienteRepository.findByNomeContainingIgnoreCase(nome);
-    }
-
-    public List<Cliente> buscarClientePeloTelefone(String telefone) {
-        if (telefone == null || telefone.trim().isEmpty()) {
-            return List.of();
-        }
-        return clienteRepository.findByTelefoneContaining(telefone);
-    }
-
-    public List<Cliente> buscarClientePelaRegiao(String regiao) {
-        if (regiao == null || regiao.trim().isEmpty()) {
-            return List.of();
-        }
-        return clienteRepository.findByRegiaoContainingIgnoreCase(regiao);
-    }
-
-
-
 }

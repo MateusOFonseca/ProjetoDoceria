@@ -7,6 +7,7 @@ import com.Api.OqaJanaFezHoje.entity.Cliente;
 import com.Api.OqaJanaFezHoje.entity.Doce;
 import com.Api.OqaJanaFezHoje.entity.ItemPedido;
 import com.Api.OqaJanaFezHoje.entity.Pedido;
+import com.Api.OqaJanaFezHoje.entity.enums.StatusPedido;
 import com.Api.OqaJanaFezHoje.mapper.PedidoMapper;
 import com.Api.OqaJanaFezHoje.repository.ClienteRepository;
 import com.Api.OqaJanaFezHoje.repository.DoceRepository;
@@ -44,7 +45,7 @@ public class PedidoService {
 
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
-        pedido.setStatus("Pendente");
+        pedido.setStatus(StatusPedido.PENDENTE);
 
         List<ItemPedido> listaItensDoPedido = new ArrayList<>();
         BigDecimal valorTotalPedido = BigDecimal.ZERO;
@@ -153,6 +154,35 @@ public class PedidoService {
         return pedidoRepository.findByClienteIdCliente(idCliente).stream()
                 .map(pedidoMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    public List<PedidoResponse> buscarPedidosPendentes() {
+        return pedidoRepository
+                .findByStatus(StatusPedido.PENDENTE)
+                .stream()
+                .map(pedidoMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PedidoResponse> buscarPedidosConcluidos() {
+        return pedidoRepository
+                .findByStatus(StatusPedido.CONCLUIDO)
+                .stream()
+                .map(pedidoMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public Optional<PedidoResponse> concluirPedido(Long idPedido) {
+        return pedidoRepository.findById(idPedido)
+                .map(pedido -> {
+                    pedido.setStatus(StatusPedido.CONCLUIDO);
+
+                    Pedido pedidoAtualizado = pedidoRepository.save(pedido);
+
+                    return pedidoMapper.toResponse(pedidoAtualizado);
+                });
     }
 
 }

@@ -59,4 +59,8 @@ public class DoceService {
                 .toList();
         return ResponseEntity.ok(doces);
     }
+
+    public Optional<Doce> buscarDocePorId(Long id) {
+        return doceRepository.findById(id);
+    }
 }

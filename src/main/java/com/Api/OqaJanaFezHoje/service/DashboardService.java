@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
@@ -23,6 +24,11 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DashboardResponse obterDashboard(int ano, int mes) {
+        if (ano < 1 || mes < 1 || mes > 12) {
+            throw new DateTimeException(
+                    "Ano e mês devem representar um período válido."
+            );
+        }
         YearMonth periodo = YearMonth.of(ano, mes);
 
         LocalDateTime inicio = periodo

@@ -12,6 +12,7 @@ import com.Api.OqaJanaFezHoje.mapper.PedidoMapper;
 import com.Api.OqaJanaFezHoje.repository.ClienteRepository;
 import com.Api.OqaJanaFezHoje.repository.DoceRepository;
 import com.Api.OqaJanaFezHoje.repository.PedidoRepository;
+import com.Api.OqaJanaFezHoje.security.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,9 @@ public class PedidoService {
     @Transactional
     public PedidoResponse criarPedido(PedidoRequest dto) {
         Cliente cliente = clienteRepository.findById(Long.valueOf(dto.idCliente()))
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado!"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Cliente não encontrado.")
+                );
 
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
@@ -52,7 +55,7 @@ public class PedidoService {
 
         for (ItemPedidoRequest itemDto : dto.itens()) {
             Doce doce = doceRepository.findByNomeEqualsIgnoreCase(itemDto.nomeDoce())
-                    .orElseThrow(() -> new RuntimeException("Doce não encontrado com o nome: " + itemDto.nomeDoce()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Doce não encontrado com o nome: " + itemDto.nomeDoce()));
 
             ItemPedido item = new ItemPedido();
             item.setPedido(pedido);
@@ -78,13 +81,16 @@ public class PedidoService {
 
     @Transactional
     public PedidoResponse modificarPedido(Long idPedido, PedidoRequest dto) {
-        // 1. Localiza o pedido existente
-        Pedido pedido = pedidoRepository.findById(Long.valueOf(idPedido))
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado com o ID: " + idPedido));
 
+        Pedido pedido = pedidoRepository.findById(Long.valueOf(idPedido))
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Cliente não encontrado.")
+                );
         if (!pedido.getCliente().getIdCliente().equals(dto.idCliente())) {
             Cliente novoCliente = clienteRepository.findById(Long.valueOf(dto.idCliente()))
-                    .orElseThrow(() -> new RuntimeException("Novo cliente não encontrado!"));
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException("Cliente não encontrado.")
+                    );
             pedido.setCliente(novoCliente);
         }
 
@@ -135,7 +141,7 @@ public class PedidoService {
 
     public void deletarPedido(Long idPedido) {
         Pedido pedido = pedidoRepository.findById(Long.valueOf(idPedido))
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado com o ID: " + idPedido));
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com o ID: " + idPedido));
         pedidoRepository.delete(pedido);
     }
 

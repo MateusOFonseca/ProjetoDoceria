@@ -4,10 +4,12 @@ import com.Api.OqaJanaFezHoje.dtos.ClienteResumoResponse;
 import com.Api.OqaJanaFezHoje.entity.Cliente;
 import com.Api.OqaJanaFezHoje.mapper.ClienteMapper;
 import com.Api.OqaJanaFezHoje.repository.ClienteRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClienteService {
@@ -78,22 +80,42 @@ public class ClienteService {
                 .toList();
     }
 
-    public void atualizarParcial(Long id, Cliente cliente) {
-        clienteRepository.findById(id).ifPresent(c -> {
-            if (cliente.getNome() != null) {
-                c.setNome(cliente.getNome());
-            }
-            if (cliente.getTelefone() != null) {
-                c.setTelefone(cliente.getTelefone());
-            }
-            if (cliente.getRegiao() != null) {
-                c.setRegiao(cliente.getRegiao());
-            }
-            clienteRepository.save(c);
-        });
+    @Transactional
+    public Optional<Cliente> atualizarParcial(
+            Long id,
+            Cliente dadosNovos
+    ) {
+        return clienteRepository.findById(id)
+                .map(clienteOriginal -> {
+                    if (dadosNovos.getNome() != null
+                            && !dadosNovos.getNome().isBlank()) {
+                        clienteOriginal.setNome(dadosNovos.getNome());
+                    }
+
+                    if (dadosNovos.getTelefone() != null
+                            && !dadosNovos.getTelefone().isBlank()) {
+                        clienteOriginal.setTelefone(dadosNovos.getTelefone());
+                    }
+
+                    if (dadosNovos.getRegiao() != null
+                            && !dadosNovos.getRegiao().isBlank()) {
+                        clienteOriginal.setRegiao(dadosNovos.getRegiao());
+                    }
+
+                    return clienteRepository.save(clienteOriginal);
+                });
     }
 
-    public void deletarCliente(Long id) {
-        clienteRepository.deleteById(id);
+    @Transactional
+    public ResponseEntity<Void> deletarCliente(Long id) {
+        return clienteRepository.findById(id)
+                .map(cliente -> {
+                    clienteRepository.delete(cliente);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+
+
 }

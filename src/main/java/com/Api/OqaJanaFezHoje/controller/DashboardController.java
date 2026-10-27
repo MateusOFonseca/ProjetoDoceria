@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.DateTimeException;
 
 @RestController
 @RequestMapping("/dashboard")
@@ -25,12 +24,8 @@ public class DashboardController {
             @RequestParam int ano,
             @RequestParam int mes
     ) {
-        try {
-            return ResponseEntity.ok(
-                    dashboardService.obterDashboard(ano, mes)
-            );
-        } catch (DateTimeException exception) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(
+                dashboardService.obterDashboard(ano, mes)
+        );
     }
 }

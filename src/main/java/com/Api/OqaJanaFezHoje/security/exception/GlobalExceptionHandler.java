@@ -1,4 +1,5 @@
-package com.Api.OqaJanaFezHoje.exception;
+package com.Api.OqaJanaFezHoje.security.exception;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;

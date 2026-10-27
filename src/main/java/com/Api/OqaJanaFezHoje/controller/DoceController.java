@@ -4,10 +4,9 @@ import com.Api.OqaJanaFezHoje.entity.Doce;
 import com.Api.OqaJanaFezHoje.service.DoceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/doces")
 public class DoceController {
 
@@ -35,6 +34,12 @@ public class DoceController {
         return service.atualizarDoce(id, doceAtualizado)
                 .map(doceSalvo -> ResponseEntity.ok(doceSalvo))
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Doce> buscarDocePorId(@PathVariable Long id) {
+        return service.buscarDocePorId(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/buscar")

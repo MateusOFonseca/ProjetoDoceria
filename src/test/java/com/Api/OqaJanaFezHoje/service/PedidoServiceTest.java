@@ -58,7 +58,7 @@ class PedidoServiceTest {
 
         PedidoRequest request = new PedidoRequest(
                 1L,
-                List.of(new ItemPedidoRequest("Brownie", 2, null))
+                List.of(new ItemPedidoRequest("Brownie", 2))
         );
 
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
@@ -100,7 +100,7 @@ class PedidoServiceTest {
 
         PedidoRequest request = new PedidoRequest(
                 1L,
-                List.of(new ItemPedidoRequest("Doce inexistente", 1, null))
+                List.of(new ItemPedidoRequest("Doce inexistente", 1))
         );
 
         when(clienteRepository.findById(1L))

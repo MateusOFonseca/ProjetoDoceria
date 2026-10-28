@@ -21,18 +21,38 @@ public class Doce {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal preco;
 
-    @Column(name = "quantidade_estoque", columnDefinition = "INT DEFAULT 0")
-    private Integer quantidadeEstoque = 0;
 
     // Getters e Setters
-    public Long getIdDoce() { return idDoce; }
-    public void setIdDoce(Long idDoce) { this.idDoce = idDoce; }
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
-    public BigDecimal getPreco() { return preco; }
-    public void setPreco(BigDecimal preco) { this.preco = preco; }
-    public Integer getQuantidadeEstoque() { return quantidadeEstoque; }
-    public void setQuantidadeEstoque(Integer quantidadeEstoque) { this.quantidadeEstoque = quantidadeEstoque; }
+    public Long getIdDoce() {
+        return idDoce;
+    }
+
+    public void setIdDoce(Long idDoce) {
+        this.idDoce = idDoce;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public BigDecimal getPreco() {
+        return preco;
+    }
+
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco;
+    }
+
 }

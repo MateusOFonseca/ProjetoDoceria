@@ -19,8 +19,7 @@ public class PedidoMapper {
         List<ItemPedidoRequest> itensDto = pedido.getItens().stream()
                 .map(item -> new ItemPedidoRequest(
                         item.getDoce().getNome(),
-                        item.getQuantidade(),
-                        item.getPrecoUnitario() != null ? item.getPrecoUnitario().doubleValue() : 0.0
+                        item.getQuantidade()
                 ))
                 .collect(Collectors.toList());
 

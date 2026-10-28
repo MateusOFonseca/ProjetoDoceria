@@ -106,7 +106,6 @@ class DoceServiceTest {
         dadosNovos.setNome("Brownie especial");
         dadosNovos.setDescricao("Com chocolate");
         dadosNovos.setPreco(new BigDecimal("15.00"));
-        dadosNovos.setQuantidadeEstoque(10);
 
         when(doceRepository.findById(1L)).thenReturn(Optional.of(doce));
         when(doceRepository.save(doce)).thenReturn(doce);
@@ -118,7 +117,6 @@ class DoceServiceTest {
         assertEquals("Brownie especial", doce.getNome());
         assertEquals("Com chocolate", doce.getDescricao());
         assertEquals(new BigDecimal("15.00"), doce.getPreco());
-        assertEquals(10, doce.getQuantidadeEstoque());
         verify(doceRepository).save(doce);
     }
 
@@ -165,7 +163,6 @@ class DoceServiceTest {
         doce.setIdDoce(id);
         doce.setNome(nome);
         doce.setPreco(new BigDecimal(preco));
-        doce.setQuantidadeEstoque(estoque);
         return doce;
     }
 }

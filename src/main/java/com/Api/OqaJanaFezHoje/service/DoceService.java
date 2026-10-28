@@ -32,9 +32,6 @@ public class DoceService {
                     if (doceAtualizado.getDescricao() != null && !doceAtualizado.getDescricao().trim().isEmpty()) {
                         doce.setDescricao(doceAtualizado.getDescricao());
                     }
-                    if (doceAtualizado.getQuantidadeEstoque() != null) {
-                        doce.setQuantidadeEstoque(doceAtualizado.getQuantidadeEstoque());
-                    }
 
                     return doceRepository.save(doce);
                 });
